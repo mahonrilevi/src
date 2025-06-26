@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Windbnb</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script type="module" src="./scripts/main.js" defer></script>
+  
+  <style>
+    .flip-card {
+      perspective: 1000px;
+      min-height: 380px;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-card-front, .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+    .flip-card-back {
+      transform: rotateY(180deg);
+    }
+    .search-box {
+      box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.1);
+    }
+     body {
+      background-color: #ffffff;
+     
+      background-attachment: fixed;
+      background-size: cover;
+      transition: background-color 0.3s ease, color 0.3s ease, background-image 0.3s ease;
+    }
+    
+    .dark {
+      background-color: #1a202c;
+      
+      color: #e2e8f0;
+    }
+    .dark .search-box {
+      background-color: #2d3748;
+      box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.3);
+    }
+    .dark .flip-card-front,
+    .dark .flip-card-back {
+      background-color: #2d3748;
+      color: #e2e8f0;
+    }
+    .dark .bg-white {
+      background-color: #2d3748;
+    }
+    .dark .text-gray-600,
+    .dark .text-gray-500 {
+      color: #a0aec0;
+    }
+    .dark .border-gray-200 {
+      border-color: #4a5568;
+    }
+    .dark #mobile-search-modal {
+      background-color: #1a202c;
+    }
+    .dark .bg-blue-50 {
+      background-color: #2a4365;
+    }
+    .dark .bg-purple-50 {
+      background-color: #44337a;
+    }
+    .dark .text-blue-600 {
+      color: #63b3ed;
+    }
+    .dark .text-purple-600 {
+      color: #b794f4;
+    }
+    .dark #suggestions,
+    .dark #suggestions-mobile,
+    .dark #guests-popup {
+      background-color: #2d3748;
+      border-color: #4a5568;
+    }
+    .dark #suggestions li:hover,
+    .dark #suggestions-mobile li:hover {
+      background-color: #4a5568;
+    }
+  </style>
+</head>
+<body class="font-sans">
+  <header class="p-4 md:p-6">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center">
+        <img src="./images/icons/logo-f7862584.svg" alt="Windbnb" class="w-24">
+        <button id="dark-mode-toggle" class="ml-4 p-2 rounded-full focus:outline-none">
+          <i class="fas fa-moon text-gray-600 dark:text-yellow-300"></i>
+        </button>
+      </div>
+      <div class="hidden md:flex items-center search-box rounded-lg">
+        <div class="relative border-r border-gray-200 px-4 py-2">
+          <input type="text" id="location-input" placeholder="Add location" class="w-40 focus:outline-none bg-transparent">
+          <ul id="suggestions" class="absolute z-10 w-full bg-white border rounded-md mt-1 max-h-60 overflow-auto hidden shadow-md left-0 dark:bg-gray-800"></ul>
+        </div>
+        <div class="relative border-r border-gray-200 px-4 py-2">
+          <input type="text" id="guests-display" placeholder="Add guests" class="w-32 focus:outline-none bg-transparent" readonly>
+          <div id="guests-popup" class="absolute z-10 bg-white rounded-lg shadow-lg p-4 mt-1 hidden w-64 left-0 dark:bg-gray-800">
+            <div class="mb-4">
+              <h4 class="font-medium">Adults</h4>
+              <p class="text-gray-500 text-sm">Ages 13 or above</p>
+              <div class="flex items-center mt-2">
+                <button type="button" id="decrement-adults" class="w-8 h-8 border rounded-full flex items-center justify-center dark:border-gray-600">-</button>
+                <span id="adults-display" class="mx-4 w-8 text-center">0</span>
+                <button type="button" id="increment-adults" class="w-8 h-8 border rounded-full flex items-center justify-center dark:border-gray-600">+</button>
+              </div>
+            </div>
+            <div class="mb-4">
+              <h4 class="font-medium">Children</h4>
+              <p class="text-gray-500 text-sm">Ages 2-12</p>
+              <div class="flex items-center mt-2">
+                <button type="button" id="decrement-children" class="w-8 h-8 border rounded-full flex items-center justify-center dark:border-gray-600">-</button>
+                <span id="children-display" class="mx-4 w-8 text-center">0</span>
+                <button type="button" id="increment-children" class="w-8 h-8 border rounded-full flex items-center justify-center dark:border-gray-600">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button id="search-button" class="text-red-500 p-2">
+          <i class="fas fa-search"></i>
+        </button>
+      </div> 
+      <button id="mobile-search-trigger" class="md:hidden flex items-center search-box rounded-lg p-2 dark:bg-gray-800">
+        <i class="fas fa-search text-red-500 mr-2"></i>
+        <span>Search</span>
+      </button>
+    </div>
+    
+    <!-- modo telefono -->
+    <div id="mobile-search-modal" class="fixed inset-0 bg-white z-50 p-6 hidden overflow-y-auto dark:bg-gray-900">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-lg font-semibold">Edit your search</h2>
+        <button id="close-mobile-search" class="text-gray-500">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form id="search-form" class="space-y-6">
+        <div>
+          <h3 class="font-bold mb-2">LOCATION</h3>
+          <input type="text" id="location-input-mobile" placeholder="Vaasa, Finland" 
+                 class="w-full p-3 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-700">
+          <ul id="suggestions-mobile" class="hidden mt-1 border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700"></ul>
+        </div>
+        
+        <div>
+          <h3 class="font-bold mb-2">GUESTS</h3>
+          <div id="guests-display-mobile" class="text-gray-500 dark:text-gray-400">0 guests</div>
+          
+          <div class="mt-4">
+            <h4 class="font-medium">Adults</h4>
+            <p class="text-gray-500 text-sm dark:text-gray-400">Ages 13 or above</p>
+            <div class="flex items-center mt-2">
+              <button type="button" id="decrement-adults-mobile" class="w-8 h-8 border rounded-full flex items-center justify-center dark:border-gray-600">-</button>
+              <span id="adults-display-mobile" class="mx-4 w-8 text-center">0</span>
+              <button type="button" id="increment-adults-mobile" class="w-8 h-8 border rounded-full flex items-center justify-center dark:border-gray-600">+</button>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <h4 class="font-medium">Children</h4>
+            <p class="text-gray-500 text-sm dark:text-gray-400">Ages 2-12</p>
+            <div class="flex items-center mt-2">
+              <button type="button" id="decrement-children-mobile" class="w-8 h-8 border rounded-full flex items-center justify-center dark:border-gray-600">-</button>
+              <span id="children-display-mobile" class="mx-4 w-8 text-center">0</span>
+              <button type="button" id="increment-children-mobile" class="w-8 h-8 border rounded-full flex items-center justify-center dark:border-gray-600">+</button>
+            </div>
+          </div>
+        </div>
+        
+        <button type="submit" class="w-full bg-red-500 text-white py-3 rounded-lg flex items-center justify-center">
+          <i class="fas fa-search mr-2"></i> Search
+        </button>
+      </form>
+    </div>
+  </header>
+
+  
+  
+  
+  
+  
+  <main class="p-4 md:p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-xl font-bold">Stays in Finland</h1>
+      <span id="stays-count" class="text-gray-600 dark:text-gray-400 text-sm">12+ stays</span>
+    </div>
+    <div id="stays-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+  </main>
+</body>
+</html>
