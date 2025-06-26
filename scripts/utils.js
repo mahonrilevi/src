@@ -10,7 +10,6 @@ export function createCard(stay) {
   const cardInner = document.createElement('div');
   cardInner.className = 'flip-card-inner relative w-full h-full';
 
-  /*la logica que puedo cambiar segun lo indique el cliente*/
   const isSmall = stay.maxGuests <= 2;
   const price = isSmall ? 2000 : 7000;
   const bedrooms = isSmall ? 1 : 3;
@@ -37,7 +36,6 @@ export function createCard(stay) {
       <h2 class="text-md font-semibold dark:text-white">${stay.title}</h2>
     </div>`;
 
-  /*parte de atras*/
   const back = document.createElement('div');
   back.className = `flip-card-back ${isSmall ? 'bg-blue-50 dark:bg-blue-900' : 'bg-purple-50 dark:bg-purple-900'} p-6 flex flex-col justify-center`;
   back.innerHTML = 
